@@ -26,7 +26,7 @@ Dependencies, build output, and caches are excluded from Git.
 ## Docker Deployment with an Existing Cloudflare Tunnel
 
 Requirements: Docker with Compose and an existing Docker network named exactly
-`clouflare`. The tunnel container must be connected to the same network.
+`cloudflare`. The tunnel container must be connected to the same network.
 
 From the project directory:
 
@@ -49,7 +49,7 @@ This project does not add a cloudflared container or a tunnel token.
 To inspect the network and logs:
 
 ```sh
-docker network inspect clouflare
+docker network inspect cloudflare
 docker compose logs --tail=100 skyrim-skyshards
 ```
 
@@ -57,7 +57,7 @@ If the network does not exist, create it on the Docker host and connect your
 tunnel to it through the tunnel's own Compose configuration:
 
 ```sh
-docker network create clouflare
+docker network create cloudflare
 ```
 
 To update the application after changing the code:

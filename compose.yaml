@@ -4,9 +4,8 @@ services:
       context: .
     restart: unless-stopped
     networks:
-      - clouflare
+      - cloudflare
 
 networks:
-  clouflare:
+  cloudflare:
     external: true
-    name: clouflare
