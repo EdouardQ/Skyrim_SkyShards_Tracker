@@ -1,0 +1,12 @@
+services:
+  skyrim-skyshards:
+    build:
+      context: .
+    restart: unless-stopped
+    networks:
+      - clouflare
+
+networks:
+  clouflare:
+    external: true
+    name: clouflare
