@@ -1,11 +1,11 @@
 # Skyrim SkyShards Tracker
 
-Carte interactive des Skyshards de Skyrim : recherche par lieu, suivi de
-progression, import/export JSON et interface français/anglais.
+An interactive Skyrim Skyshards map with location search, progress tracking,
+JSON import/export, and a French/English interface.
 
-## Développement
+## Development
 
-Utiliser Node.js 24 et pnpm 11.19.0 :
+Use Node.js 24 and pnpm 11.19.0:
 
 ```sh
 npm install --global pnpm@11.19.0
@@ -19,94 +19,93 @@ pnpm test
 pnpm build
 ```
 
-`src/` contient l'application et ses tests ; `public/map/` la carte,
-`public/shards/` les illustrations ; `docker/` la configuration Nginx.
-Les dépendances, les fichiers compilés et les caches restent hors de Git.
+`src/` contains the application and its tests, `public/map/` contains the map,
+`public/shards/` contains the images, and `docker/` contains the Nginx configuration.
+Dependencies, build output, and caches are excluded from Git.
 
-## Déploiement Docker avec le tunnel Cloudflare existant
+## Docker Deployment with an Existing Cloudflare Tunnel
 
-Prérequis : Docker avec Compose, et un réseau Docker existant nommé exactement
-`clouflare`. Le conteneur du tunnel doit être connecté à ce même réseau.
+Requirements: Docker with Compose and an existing Docker network named exactly
+`clouflare`. The tunnel container must be connected to the same network.
 
-Depuis le dossier du projet :
+From the project directory:
 
 ```sh
 docker compose up -d --build
 docker compose ps
 ```
 
-Dans la configuration de votre tunnel existant, définir l'URL du service :
+In your existing tunnel configuration, set the service URL to:
 
 ```text
 http://skyrim-skyshards:80
 ```
 
-Le service `skyrim-skyshards` est joignable par son nom sur le réseau partagé.
-Aucun port n'est publié sur l'hôte. Le tunnel assure l'accès HTTPS public ;
-Nginx reçoit les requêtes HTTP à l'intérieur du réseau Docker.
-Le projet n'ajoute pas de conteneur cloudflared ni de token de tunnel.
+The `skyrim-skyshards` service is reachable by name on the shared network.
+No ports are published on the host. The tunnel provides public HTTPS access,
+while Nginx receives HTTP requests within the Docker network.
+This project does not add a cloudflared container or a tunnel token.
 
-Pour vérifier le réseau et les logs :
+To inspect the network and logs:
 
 ```sh
 docker network inspect clouflare
 docker compose logs --tail=100 skyrim-skyshards
 ```
 
-Si le réseau est absent, le créer sur l'hôte Docker et y connecter également
-votre tunnel via sa propre configuration Compose :
+If the network does not exist, create it on the Docker host and connect your
+tunnel to it through the tunnel's own Compose configuration:
 
 ```sh
 docker network create clouflare
 ```
 
-Pour mettre à jour après modification du code :
+To update the application after changing the code:
 
 ```sh
 docker compose up -d --build
 ```
 
-Pour arrêter uniquement cette application :
+To stop only this application:
 
 ```sh
 docker compose down
 ```
 
-Le réseau externe est conservé. L'image compile les sources avec Node et pnpm
-(versions des dépendances verrouillées par `pnpm-lock.yaml`), puis Nginx sert
-le résultat. Node, pnpm et les dépendances de développement ne sont pas requis
-sur l'hôte. La première construction nécessite un accès Internet.
+The external network is preserved. The image builds the application with Node
+and pnpm, using the dependency versions locked in `pnpm-lock.yaml`, then serves
+the build output with Nginx. Node, pnpm, and development dependencies are not
+required on the host. The first build requires internet access.
 
-## Progression
+## Progress
 
-La progression est conservée dans le stockage local du navigateur, sans base
-de données serveur. Elle dépend du navigateur et de l'adresse utilisée :
-la progression enregistrée sur `localhost` n'apparaît pas automatiquement sur
-le nouveau domaine du tunnel. Aucun volume Docker n'est nécessaire.
+Progress is saved in the browser's local storage, without a server-side
+database. It is specific to the browser and site address: progress saved on
+`localhost` does not automatically appear on the tunnel's new domain.
+No Docker volume is required.
 
 ## Images
 
-Les images livrées sont au format WebP. La carte conserve ses dimensions
-d'origine ; les illustrations sont limitées à 1600 pixels sur leur plus grand
-côté. Les fichiers statiques sont mis en cache et Nginx compresse les textes.
+Images are provided in WebP format. The map retains its original dimensions;
+other images are limited to 1,600 pixels on their longest side. Static files
+are cached, and Nginx compresses text responses.
 
-Pour convertir de nouvelles images JPEG, placer les illustrations dans
-`public/shards/` en utilisant l'identifiant du lieu comme nom de fichier,
-puis lancer, avec Python et Pillow installés :
+To convert new JPEG images, place them in `public/shards/`, using each
+location's ID as the filename. Then, with Python and Pillow installed, run:
 
 ```sh
 python -m pip install Pillow
 python scripts/optimize-images.py
 ```
 
-Le script indique le dossier temporaire où sont conservés les originaux.
-Il ne remplace jamais un WebP existant. Python est uniquement un outil de
-maintenance ; il n'est nécessaire ni à Docker ni à l'application.
+The script prints the temporary directory where the originals are backed up.
+It never overwrites an existing WebP file. Python is only a maintenance tool;
+neither the Docker image nor the application requires it.
 
-## Licence et sources
+## License and Sources
 
-Le code est distribué sous [licence MIT](LICENSE). Les bibliothèques conservent
-leurs licences respectives. Cette licence ne concède pas de droits sur les
-cartes, images, marques ou autres contenus tiers liés à Skyrim.
-Les liens sources des illustrations sont conservés dans
-`src/data/source-snapshot.json` et accessibles depuis les fiches des lieux.
+The code is distributed under the [MIT License](LICENSE). Libraries retain
+their respective licenses. This license does not grant rights to maps, images,
+trademarks, or other third-party content related to Skyrim.
+Image source links are preserved in `src/data/source-snapshot.json` and are
+accessible from each location's details card.
